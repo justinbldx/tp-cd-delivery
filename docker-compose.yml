@@ -1,0 +1,25 @@
+services:
+  verdaccio:
+    build:
+      context: ./docker/verdaccio
+    container_name: tp-cd-github-flow-verdaccio
+    volumes:
+      - verdaccio-storage:/verdaccio/storage
+    networks:
+      - cd-network
+
+  registry:
+    image: registry:2
+    container_name: tp-cd-github-flow-registry
+    volumes:
+      - registry-storage:/var/lib/registry
+    networks:
+      - cd-network
+
+networks:
+  cd-network:
+    driver: bridge
+
+volumes:
+  verdaccio-storage:
+  registry-storage:
