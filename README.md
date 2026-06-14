@@ -1,12 +1,12 @@
-# tp-cd-github-flow
+# tp-cd-delivery
 
-API de gestion de taches - support du TP cours-04 sur le Continuous Delivery avec GitHub Flow.
+API de gestion de taches - support du TP cours-04 sur le Continuous Delivery.
 
 ## Objectifs pedagogiques
 
 Ce depot part d'une CI deja verte. Vous ajoutez la partie livraison :
 
-- appliquer un GitHub Flow court et local ;
+- comprendre une pipeline de livraison sans imposer un workflow de developpement precis ;
 - versionner avec Conventional Commits et `commit-and-tag-version` ;
 - publier un package npm dans Verdaccio ;
 - publier une image Docker dans un registre local `registry:2` ;
@@ -30,11 +30,11 @@ Ce depot part d'une CI deja verte. Vous ajoutez la partie livraison :
 
 Prerequis : Docker Desktop, VS Code et l'extension Dev Containers.
 
-1. Forker le depot `GVI2026/tp-cd-github-flow` sur GitHub.
+1. Forker le depot `GVI2026/tp-cd-delivery` sur GitHub.
 2. Cloner votre fork :
    ```bash
    git clone <url-de-votre-fork>
-   cd tp-cd-github-flow
+   cd tp-cd-delivery
    ```
 3. Ouvrir le dossier dans VS Code.
 4. Accepter `Reopen in Container`.
@@ -105,7 +105,7 @@ security -> release -> publish-npm
 Deroule du TP :
 
 - Partie 1 : travailler directement sur `main` pour ajouter les jobs CD manquants et les tester avec `act`.
-- Partie 2 : appliquer localement la release avec `npx commit-and-tag-version`, puis faire un petit fix via branche courte, rebase et integration fast-forward.
+- Partie 2 : appliquer localement la release avec `npx commit-and-tag-version`, puis verifier qu'un petit changement applicatif repart d'un depot aligne.
 
 Important : quand `npx commit-and-tag-version` est lance par `act`, le commit de release et le tag restent dans le runner ephemere. Ils ne sont pas visibles dans votre depot local. Pour continuer a coder apres un essai de release, lancez vous-meme `npx commit-and-tag-version` dans le DevContainer.
 
@@ -118,22 +118,18 @@ Commandes de fin de TP :
 ```bash
 act -j release
 act -j publish-npm
-npm view tp-cd-github-flow --registry http://localhost:4873
+npm view tp-cd-delivery --registry http://localhost:4873
 act -j publish-docker
-curl http://localhost:5000/v2/tp-cd-github-flow/tags/list
+curl http://localhost:5000/v2/tp-cd-delivery/tags/list
 ```
 
-Integration locale de la branche de fix :
+Petit changement applicatif apres release locale :
 
 ```bash
 git checkout main
-git checkout -b fix/swagger-description
 # modifier une ligne dans src/main.ts
 git add src/main.ts
 git commit -m "fix: clarify api description"
-git rebase main
-git checkout main
-git merge --ff-only fix/swagger-description
 act -j security
 ```
 
@@ -144,15 +140,15 @@ Les publications locales sont conservees dans des volumes Docker. Si vous relanc
 Pour supprimer une version npm precise dans Verdaccio :
 
 ```bash
-npm unpublish tp-cd-github-flow@0.0.1 --registry http://localhost:4873 --force
+npm unpublish tp-cd-delivery@0.0.1 --registry http://localhost:4873 --force
 ```
 
 Pour repartir de zero sur les deux registres locaux :
 
 ```bash
 docker compose down
-docker volume rm tp-cd-github-flow_verdaccio-storage 2>/dev/null || true
-docker volume rm tp-cd-github-flow_registry-storage 2>/dev/null || true
+docker volume rm tp-cd-delivery_verdaccio-storage 2>/dev/null || true
+docker volume rm tp-cd-delivery_registry-storage 2>/dev/null || true
 bash .devcontainer/start-registries.sh
 ```
 
@@ -161,8 +157,8 @@ Le registre Docker local ne supprime pas un tag de facon simple dans cette confi
 Verifications apres nettoyage :
 
 ```bash
-npm view tp-cd-github-flow --registry http://localhost:4873
-curl http://localhost:5000/v2/tp-cd-github-flow/tags/list
+npm view tp-cd-delivery --registry http://localhost:4873
+curl http://localhost:5000/v2/tp-cd-delivery/tags/list
 ```
 
 ## Documentation utile

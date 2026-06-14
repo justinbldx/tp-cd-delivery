@@ -14,8 +14,8 @@ security -> release -> publish-npm
 ```
 
 Dans la premiere partie du TP, cette suite est ajoutee directement sur `main`.
-La branche courte n'arrive qu'ensuite, pour un petit fix applicatif rebase sur
-`main` puis integre en fast-forward.
+Le petit changement applicatif arrive ensuite uniquement pour verifier qu'un
+depot local realigne peut repartir vers une nouvelle version.
 
 ## Jobs initiaux
 

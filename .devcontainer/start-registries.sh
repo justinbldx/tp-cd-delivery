@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-WORKSPACE="/workspaces/tp-cd-github-flow"
-NETWORK="tp-cd-github-flow_cd-network"
+WORKSPACE="/workspaces/tp-cd-delivery"
+NETWORK="tp-cd-delivery_cd-network"
 
 echo "==> Démarrage des registres locaux (Verdaccio + registry:2)..."
 docker compose -f "$WORKSPACE/docker-compose.yml" up -d --build

@@ -1,5 +1,5 @@
 {
-  "name": "tp-cd-github-flow",
+  "name": "tp-cd-delivery",
   "image": "mcr.microsoft.com/devcontainers/typescript-node:24",
 
   "customizations": {
@@ -16,7 +16,7 @@
   "forwardPorts": [3000, 4873, 5000],
 
   "mounts": [
-    "source=tp-cd-github-flow-npm-cache,target=/home/node/.npm,type=volume"
+    "source=tp-cd-delivery-npm-cache,target=/home/node/.npm,type=volume"
   ],
 
   "postCreateCommand": "bash .devcontainer/setup.sh",

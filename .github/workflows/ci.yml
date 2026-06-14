@@ -175,6 +175,6 @@ jobs:
   #   - S'executer uniquement sur la branche main
   #   - Telecharger l'artefact build-dist dans dist/
   #   - Construire l'image Docker de l'API
-  #   - Taguer et pousser vers localhost:5000/tp-cd-github-flow:<version>
+  #   - Taguer et pousser vers localhost:5000/tp-cd-delivery:<version>
   # Le TP demande de verifier que le tag Docker n'existe pas deja avant le push.
   # ---------------------------------------------------------------------------

@@ -9,7 +9,7 @@ export class HealthController {
   health() {
     return {
       status: 'ok',
-      service: 'tp-cd-github-flow',
+      service: 'tp-cd-delivery',
     };
   }
 }

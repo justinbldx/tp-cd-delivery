@@ -2,7 +2,7 @@ services:
   verdaccio:
     build:
       context: ./docker/verdaccio
-    container_name: tp-cd-github-flow-verdaccio
+    container_name: tp-cd-delivery-verdaccio
     volumes:
       - verdaccio-storage:/verdaccio/storage
     networks:
@@ -10,7 +10,7 @@ services:
 
   registry:
     image: registry:2
-    container_name: tp-cd-github-flow-registry
+    container_name: tp-cd-delivery-registry
     volumes:
       - registry-storage:/var/lib/registry
     networks:

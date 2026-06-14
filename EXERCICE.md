@@ -1,4 +1,4 @@
-# Exercices - TP Cours-04 : Continuous Delivery avec GitHub Flow
+# Exercices - TP Cours-04 : Continuous Delivery
 
 ## Contexte
 
@@ -33,7 +33,7 @@ Comme pour les TP precedents, commencez par travailler depuis votre fork :
 
 ```bash
 git clone <url-de-votre-fork>
-cd tp-cd-github-flow
+cd tp-cd-delivery
 ```
 
 Le TP reste ensuite local : les jobs sont executes avec `act`, le package npm est publie dans Verdaccio, et l'image est poussee dans le registre Docker local `registry:2`.
@@ -76,7 +76,7 @@ git commit -m "feat: add delivery pipeline"
 
 Point important : avec `act`, le commit et le tag crees par `npx commit-and-tag-version` existent dans le runner ephemere, pas dans votre depot local. Ils servent a comprendre le job `release`, mais ils ne modifient pas votre copie de travail.
 
-## Partie 2 - Ajouter un fix via branche courte et rebase
+## Partie 2 - Ajouter un petit changement apres release locale
 
 Avant de recoder, realignez votre depot local avec la release simulee dans `act` :
 
@@ -85,24 +85,21 @@ npx commit-and-tag-version
 git status
 ```
 
-Cette commande applique localement les changements de release, typiquement `package.json`, `package-lock.json`, `CHANGELOG.md` et un tag Git. Verifiez que votre `main` est propre avant de creer la branche de fix.
+Cette commande applique localement les changements de release, typiquement `package.json`, `package-lock.json`, `CHANGELOG.md` et un tag Git. Verifiez que votre `main` est propre avant de modifier a nouveau le code.
 
 Le fix applicatif est volontairement minimal : modifier une ligne de documentation Swagger dans `src/main.ts`, par exemple la description de l'API.
 
 ```bash
 git checkout main
-git checkout -b fix/swagger-description
 
 # dans src/main.ts, clarifier la description Swagger
 git add src/main.ts
 git commit -m "fix: clarify api description"
-
-git rebase main
-git checkout main
-git merge --ff-only fix/swagger-description
 ```
 
-Le rebase garde une histoire lineaire. L'integration sur `main` se fait ensuite en fast-forward : aucun commit de merge n'est cree.
+L'objectif n'est pas de pratiquer un workflow de branches. Il est de comprendre
+que, apres une release simulee avec `act`, le depot local doit etre realigne
+avant de produire un nouveau changement versionnable.
 
 Relancez les verifications :
 
@@ -232,7 +229,7 @@ Verification :
 
 ```bash
 act -j publish-npm
-npm view tp-cd-github-flow --registry http://localhost:4873
+npm view tp-cd-delivery --registry http://localhost:4873
 ```
 
 Verdaccio refuse de publier deux fois la meme version. C'est normal : une version publiee est consideree comme immuable.
@@ -281,7 +278,7 @@ publish-docker:
     - name: Verifier que le tag Docker n'existe pas
       run: |
         TAG="${{ steps.version.outputs.version }}"
-        URL="http://localhost:5000/v2/tp-cd-github-flow/manifests/${TAG}"
+        URL="http://localhost:5000/v2/tp-cd-delivery/manifests/${TAG}"
         if curl -fsI \
           -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
           "$URL" > /dev/null; then
@@ -291,17 +288,17 @@ publish-docker:
         fi
 
     - name: Construire l'image
-      run: docker build -t localhost:5000/tp-cd-github-flow:${{ steps.version.outputs.version }} .
+      run: docker build -t localhost:5000/tp-cd-delivery:${{ steps.version.outputs.version }} .
 
     - name: Publier l'image
-      run: docker push localhost:5000/tp-cd-github-flow:${{ steps.version.outputs.version }}
+      run: docker push localhost:5000/tp-cd-delivery:${{ steps.version.outputs.version }}
 ```
 
 Verification :
 
 ```bash
 act -j publish-docker
-curl http://localhost:5000/v2/tp-cd-github-flow/tags/list
+curl http://localhost:5000/v2/tp-cd-delivery/tags/list
 ```
 
 Contrairement a Verdaccio, `registry:2` accepte par defaut de pousser un tag Docker qui existe deja. Un tag Docker est une reference mutable vers un manifeste d'image : repusher `:0.0.1` peut donc faire pointer ce tag vers une nouvelle image. La verification ci-dessus rend le pipeline local plus strict en refusant de masquer une image deja publiee.
@@ -317,13 +314,13 @@ Les artefacts publies pendant le TP restent dans les volumes Docker de Verdaccio
 Verdaccio refuse de publier deux fois la meme version. Pour supprimer une version precise :
 
 ```bash
-npm unpublish tp-cd-github-flow@0.0.1 --registry http://localhost:4873 --force
+npm unpublish tp-cd-delivery@0.0.1 --registry http://localhost:4873 --force
 ```
 
 Puis verifier :
 
 ```bash
-npm view tp-cd-github-flow --registry http://localhost:4873
+npm view tp-cd-delivery --registry http://localhost:4873
 ```
 
 ### Reinitialiser les deux registres locaux
@@ -332,8 +329,8 @@ La methode la plus simple pour un TP est de supprimer les volumes de stockage de
 
 ```bash
 docker compose down
-docker volume rm tp-cd-github-flow_verdaccio-storage 2>/dev/null || true
-docker volume rm tp-cd-github-flow_registry-storage 2>/dev/null || true
+docker volume rm tp-cd-delivery_verdaccio-storage 2>/dev/null || true
+docker volume rm tp-cd-delivery_registry-storage 2>/dev/null || true
 bash .devcontainer/start-registries.sh
 ```
 

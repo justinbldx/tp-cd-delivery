@@ -15,7 +15,7 @@ Tant que `package-lock.json` ne change pas, la cle reste la meme et les jobs peu
 Avec `act`, les jobs tournent dans des conteneurs Docker locaux. Le fichier `.actrc` ajoute un volume npm dedie :
 
 ```text
---container-options=--volume=tp-cd-github-flow-act-npm:/root/.npm
+--container-options=--volume=tp-cd-delivery-act-npm:/root/.npm
 ```
 
 Ce volume evite de retélécharger inutilement les packages entre plusieurs executions locales.
