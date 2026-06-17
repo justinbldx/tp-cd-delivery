@@ -196,7 +196,37 @@ jobs:
   # Si Verdaccio refuse une version deja publiee, nettoyez le registre local
   # avec les commandes donnees dans EXERCICE.md.
   # ---------------------------------------------------------------------------
-  
+  publish-npm:
+    name: Publish npm
+    runs-on: ubuntu-latest
+    needs: [release]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Restaurer le cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Telecharger le build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dist
+          path: dist/
+
+      - name: Configurer Verdaccio
+        run: npm set //localhost:4873/:_authToken "dummy-token"
+
+      - name: Publier le package
+        run: npm publish --registry http://localhost:4873
 
   # ---------------------------------------------------------------------------
   # EXERCICE 3 : Ajouter un job "publish-docker" ici
