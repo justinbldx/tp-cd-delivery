@@ -196,6 +196,7 @@ jobs:
   # Si Verdaccio refuse une version deja publiee, nettoyez le registre local
   # avec les commandes donnees dans EXERCICE.md.
   # ---------------------------------------------------------------------------
+  
 
   # ---------------------------------------------------------------------------
   # EXERCICE 3 : Ajouter un job "publish-docker" ici
