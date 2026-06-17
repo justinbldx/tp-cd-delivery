@@ -155,6 +155,35 @@ jobs:
   # Avec act, le commit et le tag crees par ce job restent dans le runner
   # ephemere. Lancez npx commit-and-tag-version localement avant de recoder.
   # ---------------------------------------------------------------------------
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [security]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Restaurer le cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Configurer git user
+        run: |
+          git config user.email "ci@example.com"
+          git config user.name "CI"
+
+      - name: Calculer la version
+        run: npx commit-and-tag-version
 
   # ---------------------------------------------------------------------------
   # EXERCICE 2 : Ajouter un job "publish-npm" ici
